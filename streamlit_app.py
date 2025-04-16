@@ -1,8 +1,7 @@
 import openai
 import streamlit as st
 
-openai.api_key = st.secrets["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"]  # Or use os.getenv("OPENAI_API_KEY")
-
+openai.api_key = st.secrets["
 st.title("Smart FAQ Chatbot")
 
 if "chat" not in st.session_state:

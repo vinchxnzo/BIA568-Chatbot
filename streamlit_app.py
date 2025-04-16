@@ -1,10 +1,10 @@
 import streamlit as st
 
-# Page setup
+# Page config
 st.set_page_config(page_title="Stevens Graduate Advisor Bot", page_icon="🎓")
 st.title("🎓 Graduate Academics Advisor Chatbot")
 
-# Inject custom CSS
+# Custom CSS styles for chat UI
 st.markdown("""
     <style>
         .chat-message {
@@ -13,16 +13,17 @@ st.markdown("""
             margin-bottom: 10px;
             max-width: 80%;
             word-wrap: break-word;
+            color: white;
         }
 
         .user-msg {
-            background-color: #dceeff;
+            background-color: #4169E1; /* Royal Blue */
             text-align: right;
             margin-left: auto;
         }
 
         .bot-msg {
-            background-color: #eaeaea;
+            background-color: #800000; /* Maroon */
             text-align: left;
             margin-right: auto;
         }
@@ -41,11 +42,10 @@ st.markdown("""
 
 st.markdown("""
 Hi there! I'm **GradAdviserBot**, your virtual Graduate Academics Advisor here at Stevens.  
-I'm here to help answer your questions about applications, transcripts, dual degrees, and more.  
-Just ask me a question below — I’ll do my best to help! 👇
+Ask me anything about transcripts, dual programs, admissions, and more.👇
 """)
 
-# Session state to store conversation
+# Message history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -68,15 +68,15 @@ faq = {
     "funding": "Assistantships are limited and competitive. If you’re not awarded one in your first year, you can still pursue opportunities within your department after you arrive."
 }
 
-# Message formatter with styled HTML
+# Message formatter
 def format_message(sender, message):
     css_class = "user-msg" if sender.lower() == "you" else "bot-msg"
     return f'<div class="chat-message {css_class}"><strong>{sender}:</strong> {message}</div>'
 
-# User input
+# Input box
 user_input = st.text_input("Type your question here:")
 
-# Handle user interaction
+# Chat logic
 if user_input:
     st.session_state.messages.append(("You", user_input))
 
@@ -89,7 +89,7 @@ if user_input:
 
     st.session_state.messages.append(("GradAdviserBot", response))
 
-# Render conversation with styles
+# Display messages
 st.markdown('<div class="chat-container">', unsafe_allow_html=True)
 for sender, msg in st.session_state.messages:
     st.markdown(format_message(sender, msg), unsafe_allow_html=True)

@@ -1,20 +1,55 @@
 import streamlit as st
 
+# Page setup
 st.set_page_config(page_title="Stevens Graduate Advisor Bot", page_icon="🎓")
 st.title("🎓 Graduate Academics Advisor Chatbot")
 
+# Inject custom CSS
+st.markdown("""
+    <style>
+        .chat-message {
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user-msg {
+            background-color: #dceeff;
+            text-align: right;
+            margin-left: auto;
+        }
+
+        .bot-msg {
+            background-color: #eaeaea;
+            text-align: left;
+            margin-right: auto;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stTextInput > div > input {
+            background-color: #fff;
+            border-radius: 8px;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 st.markdown("""
 Hi there! I'm **GradAdviserBot**, your virtual Graduate Academics Advisor here at Stevens.  
-I'm here to help answer your questions about applications, transcripts, dual degrees, and more.
-
-Just ask me a question below — I'll do my best to help you out! 👇
+I'm here to help answer your questions about applications, transcripts, dual degrees, and more.  
+Just ask me a question below — I’ll do my best to help! 👇
 """)
 
-# Initialize session history
+# Session state to store conversation
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# FAQ logic
+# FAQ knowledge base
 faq = {
     "application requirements": "To apply, you'll need an online application, official transcripts, two letters of recommendation, a personal statement, a resume (for business programs), and a $60 fee. GRE/GMAT or English proficiency may also be required depending on your program.",
     
@@ -33,15 +68,20 @@ faq = {
     "funding": "Assistantships are limited and competitive. If you’re not awarded one in your first year, you can still pursue opportunities within your department after you arrive."
 }
 
-# User input
-user_input = st.text_input("You:", key="input")
+# Message formatter with styled HTML
+def format_message(sender, message):
+    css_class = "user-msg" if sender.lower() == "you" else "bot-msg"
+    return f'<div class="chat-message {css_class}"><strong>{sender}:</strong> {message}</div>'
 
+# User input
+user_input = st.text_input("Type your question here:")
+
+# Handle user interaction
 if user_input:
     st.session_state.messages.append(("You", user_input))
 
-    response = "I'm sorry, I couldn't find info on that. You can try rephrasing or email gradadmissions@stevens.edu."
+    response = "I'm sorry, I couldn't find info on that. Try rephrasing or contact gradadmissions@stevens.edu."
 
-    # Keyword matching
     for keyword in faq:
         if keyword in user_input.lower():
             response = faq[keyword]
@@ -49,6 +89,8 @@ if user_input:
 
     st.session_state.messages.append(("GradAdviserBot", response))
 
-# Display conversation history
+# Render conversation with styles
+st.markdown('<div class="chat-container">', unsafe_allow_html=True)
 for sender, msg in st.session_state.messages:
-    st.markdown(f"**{sender}:** {msg}")
+    st.markdown(format_message(sender, msg), unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)

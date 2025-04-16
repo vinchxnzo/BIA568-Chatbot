@@ -1,33 +1,29 @@
+pip install openai
+
+import openai
 import streamlit as st
 
-st.title("Stevens Graduate Admissions Chatbot")
+openai.api_key = st.secrets["OPENAI_API_KEY"]  # Or use os.getenv("OPENAI_API_KEY")
 
-# Initialize session state
-if 'messages' not in st.session_state:
-    st.session_state.messages = []
+st.title("Smart FAQ Chatbot")
 
-# User input
-user_input = st.text_input("You:", key="input")
+if "chat" not in st.session_state:
+    st.session_state.chat = []
 
-# Define a simple FAQ dictionary
-faq = {
-    "application requirements": "Applicants must submit an online application, official transcripts, two letters of recommendation, a personal statement, a resume (for School of Business applicants), and a $60 application fee. GRE/GMAT scores and proof of English proficiency may also be required.",
-    "application deadline": "Applications are accepted on a rolling basis, but it's recommended to apply by the suggested deadlines to ensure timely review.",
-    "check application status": "You can check your application status by logging into the online application status portal.",
-    "transcripts": "Submit official transcripts from all institutions attended. Unofficial transcripts can be uploaded for initial review, but official ones are required for final admission.",
-    "funding": "Assistantships are limited. If not awarded initially, you may pursue opportunities within your department after arrival."
-}
+user_input = st.text_input("Ask a question:", key="input")
 
-# Generate bot response
 if user_input:
-    st.session_state.messages.append(("You", user_input))
-    response = "I'm sorry, I don't have information on that topic."
-    for key in faq:
-        if key in user_input.lower():
-            response = faq[key]
-            break
-    st.session_state.messages.append(("Bot", response))
+    st.session_state.chat.append(("You", user_input))
 
-# Display conversation
-for sender, message in st.session_state.messages:
-    st.markdown(f"**{sender}:** {message}")
+    prompt = f"You are a helpful assistant for Stevens Graduate Admissions. Here’s a question: {user_input}"
+
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    answer = response['choices'][0]['message']['content']
+    st.session_state.chat.append(("Bot", answer))
+
+for sender, msg in st.session_state.chat:
+    st.markdown(f"**{sender}:** {msg}")

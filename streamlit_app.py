@@ -1,44 +1,54 @@
 import streamlit as st
 
-st.title("Stevens Graduate Admissions Chatbot")
+st.set_page_config(page_title="Stevens Graduate Advisor Bot", page_icon="🎓")
+st.title("🎓 Graduate Academics Advisor Chatbot")
 
-# Initialize session state
-if 'messages' not in st.session_state:
+st.markdown("""
+Hi there! I'm **GradAdviserBot**, your virtual Graduate Academics Advisor here at Stevens.  
+I'm here to help answer your questions about applications, transcripts, dual degrees, and more.
+
+Just ask me a question below — I'll do my best to help you out! 👇
+""")
+
+# Initialize session history
+if "messages" not in st.session_state:
     st.session_state.messages = []
+
+# FAQ logic
+faq = {
+    "application requirements": "To apply, you'll need an online application, official transcripts, two letters of recommendation, a personal statement, a resume (for business programs), and a $60 fee. GRE/GMAT or English proficiency may also be required depending on your program.",
+    
+    "check application status": "You can check your status anytime by logging into the [application status portal](https://gradapp.stevens.edu/). You'll see updates from both yourself and the admissions office there.",
+    
+    "admissions decision": "Master's applications are typically reviewed within 3–4 weeks. Ph.D. decisions take about 6 weeks after the deadline. Once a decision is made, you’ll get an email notification to check your status portal.",
+    
+    "official transcript": "An official transcript is one sent directly from your institution in a sealed envelope or via a verified electronic sender. It must include a signature or seal and a certified English translation if needed.",
+    
+    "stevens graduate transcripts": "If you earned a degree at Stevens before, you don’t need to resubmit your transcripts. We’ll upload them for you automatically.",
+    
+    "academic calendar": "Stevens runs on a 15-week semester system for both fall and spring. You can view the full academic calendar [here](https://www.stevens.edu/academics/academic-calendar).",
+    
+    "pursuing two programs": "Yes! Stevens offers interdisciplinary graduate programs. Submit a written proposal to the Dean of Graduate Academics. If approved, a faculty committee will help you create a study plan. One faculty member will be your advisor throughout the process.",
+    
+    "funding": "Assistantships are limited and competitive. If you’re not awarded one in your first year, you can still pursue opportunities within your department after you arrive."
+}
 
 # User input
 user_input = st.text_input("You:", key="input")
 
-# Define a simple FAQ dictionary
-faq = {
-    "application requirements": "Applicants must submit an online application, official transcripts, two letters of recommendation, a personal statement, a resume (for School of Business applicants), and a $60 application fee. GRE/GMAT scores and proof of English proficiency may also be required.",
-
-    "application deadline": "Applications are accepted on a rolling basis, but it's recommended to apply by the suggested deadlines to ensure timely review.",
-
-    "check application status": "Once you've submitted your application, you can check updates through the online application status portal.",
-
-    "admission decision notification": "Master’s applications are reviewed within 3–4 weeks, but timing may vary. You’ll get an email when there’s an update on your application status. Ph.D. decisions are generally made ~6 weeks after the deadline.",
-
-    "official transcript": "A transcript is considered official if it is sent in a sealed envelope from the institution, provided by the student in a sealed unopened envelope, or sent electronically through a verified sender. It must also contain a seal/signature and legal translation if not in English.",
-
-    "stevens graduate transcripts": "If you previously graduated from Stevens, you do not need to upload your transcripts again. The Graduate Admissions team will retrieve and upload them for you.",
-
-    "academic calendar": "Stevens follows a traditional semester system with fall and spring semesters (15 weeks each). The full academic calendar is available on the Stevens website.",
-
-    "pursuing two programs": "Yes, Stevens offers interdisciplinary graduate programs. To pursue two programs, you’ll need to submit a written proposal to the Dean of Graduate Academics. If approved, a committee will help you finalize a study plan."
-}
-
-
-# Generate bot response
 if user_input:
     st.session_state.messages.append(("You", user_input))
-    response = "I'm sorry, I don't have information on that topic."
-    for key in faq:
-        if key in user_input.lower():
-            response = faq[key]
-            break
-    st.session_state.messages.append(("Bot", response))
 
-# Display conversation
-for sender, message in st.session_state.messages:
-    st.markdown(f"**{sender}:** {message}")
+    response = "I'm sorry, I couldn't find info on that. You can try rephrasing or email gradadmissions@stevens.edu."
+
+    # Keyword matching
+    for keyword in faq:
+        if keyword in user_input.lower():
+            response = faq[keyword]
+            break
+
+    st.session_state.messages.append(("GradAdviserBot", response))
+
+# Display conversation history
+for sender, msg in st.session_state.messages:
+    st.markdown(f"**{sender}:** {msg}")
